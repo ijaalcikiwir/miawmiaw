@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1000 candi buat aini (banguj sendiri jir)</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: #040612;
+      color: #f8fafc;
+      text-align: center;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Background Canvas untuk Bintang Bertebaran */
+    #spaceCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 950px;
+      margin: 0 auto;
+      padding: 40px 15px;
+    }
+
+    .heart-icon {
+      font-size: 2.5rem;
+      color: #ef4444;
+      animation: heartbeat 1.5s infinite;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      20% { transform: scale(1.15); }
+      40% { transform: scale(1); }
+      60% { transform: scale(1.15); }
+      80% { transform: scale(1); }
+      100% { transform: scale(1); }
+    }
+
+    h1 {
+      margin: 0 0 10px 0;
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #f59e0b, #fbbf24, #fef08a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+    }
+
+    .sub-title {
+      font-size: 1.1rem;
+      color: #94a3b8;
+      max-width: 550px;
+      margin: 0 auto 30px auto;
+      line-height: 1.6;
+    }
+
+    /* Dashboard Transparan */
+    .dashboard {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 25px;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      margin-bottom: 30px;
+    }
+
+    .progress-wrapper {
+      margin-bottom: 20px;
+    }
+
+    .progress-text {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .progress-text span {
+      color: #fbbf24;
+      text-shadow: 0 0 15px rgba(251, 191, 36, 0.6);
+    }
+
+    .bar-bg {
+      width: 100%;
+      height: 10px;
+      background: rgba(30, 41, 59, 0.8);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 2px;
+    }
+
+    .bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #d97706, #fbbf24, #fef08a);
+      border-radius: 99px;
+      box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
+      transition: width 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-manual {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #0f172a;
+      box-shadow: 0 4px 20px rgba(217, 119, 6, 0.3);
+    }
+
+    .btn-manual:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(217, 119, 6, 0.5);
+    }
+
+    .btn-auto {
+      background: rgba(251, 191, 36, 0.06);
+      color: #fbbf24;
+      border: 2px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .btn-auto:hover {
+      background: rgba(251, 191, 36, 0.15);
+      border-color: #fbbf24;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(251, 191, 36, 0.2);
+    }
+
+    button:disabled {
+      background: #1e293b !important;
+      color: #475569 !important;
+      border-color: #1e293b !important;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Grid Candi Berisi Siluet Gambar */
+    .grid-container {
+      background: rgba(15, 23, 42, 0.45);
+      border-radius: 24px;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(40, 1fr);
+      gap: 4px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 768px) {
+      .grid { grid-template-columns: repeat(25, 1fr); gap: 3px; }
+      h1 { font-size: 2.2rem; }
+    }
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: repeat(20, 1fr); gap: 2px; }
+    }
+
+    .candi {
+      aspect-ratio: 1;
+      background-color: rgba(30, 41, 59, 0.4);
+      border-radius: 4px;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+      background-size: 70%;
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      opacity: 0.4;
+    }
+
+    /* Efek Pas Nyala: Berubah Jadi Siluet Candi Prambanan Emas */
+    .candi.active {
+      background-color: #fbbf24;
+      /* Menggunakan inline SVG Siluet Candi agar tidak patah/rusak saat di-load */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2378350f'%3E%3Cpath d='M12 2l1.5 4h-3L12 2zm1.5 4l1 3.5h-5L11 6h2.5zM8 10.5l1.5 5h5l1.5-5H8zm-3 6l1 5.5h12l1-5.5H5z'/%3E%3C/svg%3E");
+      box-shadow: 0 0 12px #f59e0b, 0 0 4px #fff;
+      animation: popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      opacity: 1;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.5); z-index: 10; }
+      100% { transform: scale(1); }
+    }
+
+    /* Surat Cinta / Message */
+    .message-box {
+      margin-top: 40px;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.75));
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      border-radius: 24px;
+      padding: 35px;
+      display: none;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    }
+
+    .message-box.show {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      box-shadow: 0 0 40px rgba(251, 191, 36, 0.08);
+    }
+
+    .message-text {
+      font-size: 1.3rem;
+      line-height: 2;
+      color: #e2e8f0;
+      text-align: left;
+      max-width: 600px;
+      margin: 0 auto;
+      white-space: pre-line;
+    }
+
+    .highlight {
+      color: #fbbf24;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+    }
+
+    .signature {
+      margin-top: 30px;
+      text-align: right;
+      font-style: italic;
+      color: #a1a1aa;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="spaceCanvas"></canvas>
+
+<div class="container">
+  <div class="heart-icon">❤️</div>
+  <h1>1000 candi buat aini</h1>
+  <div class="sub-title"> 1000 candi enih tuh anggep aja </div>
+
+  <div class="dashboard">
+    <div class="progress-wrapper">
+      <div class="progress-text" id="progress"><span>0</span> / 1000 Candi</div>
+      <div class="bar-bg">
+        <div class="bar-fill" id="barFill"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-manual" id="btnManual" onclick="buildManual()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        bangun satu jir kerja keras
+      </button>
+      <button class="btn-auto" id="btnAuto" onclick="buildAuto()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        manggil jin (licik ga cinta)
+      </button>
+    </div>
+  </div>
+
+  <div class="grid-container">
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="message-box" id="messageBox">
+    <div class="message-text" id="typewriter"></div>
+    <div class="signature" id="sigText"></div>
+  </div>
+</div>
+
+<script>
+  // 1. Background Stars Animation (Canvas)
+  const canvas = document.getElementById('spaceCanvas');
+  const ctx = canvas.getContext('2d');
+
+  let stars = [];
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initStars();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+     window.addEventListener('resize', resizeCanvas);
+     resizeCanvas();
+     drawStars();
+  });
+
+  function initStars() {
+    stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 6000);
+    for (let i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2,
+        alpha: Math.random(),
+        speed: 0.01 + Math.random() * 0.02
+      });
+    }
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#ffffff';
+    stars.forEach(star => {
+      star.alpha += star.speed;
+      if (star.alpha > 1 || star.alpha < 0) star.speed = -star.speed;
+      ctx.globalAlpha = Math.abs(star.alpha);
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1.0;
+    requestAnimationFrame(drawStars);
+  }
+
+  // 2. Core Logic 1000 Temples
+  const grid = document.getElementById('grid');
+  const messageBox = document.getElementById('messageBox');
+  const typewriter = document.getElementById('typewriter');
+  const sigText = document.getElementById('sigText');
+  const progressSpan = document.querySelector('#progress span');
+  const barFill = document.getElementById('barFill');
+  const btnManual = document.getElementById('btnManual');
+  const btnAuto = document.getElementById('btnAuto');
+
+  const TOTAL_CANDI = 1000;
+  let count = 0;
+  let isAutoRunning = false;
+
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < TOTAL_CANDI; i++) {
+    const div = document.createElement('div');
+    div.classList.add('candi');
+    fragment.appendChild(div);
+  }
+  grid.appendChild(fragment);
+
+  const candis = document.querySelectorAll('.candi');
+
+  // Synthesizer Audio Efek (Tanpa File Eksternal)
+  let audioCtx = null;
+  function playTone(freq, duration) {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch (e) {}
+  }
+
+  function updateProgress() {
+    progressSpan.innerText = count;
+    const percentage = (count / TOTAL_CANDI) * 100;
+    barFill.style.width = percentage + "%";
+
+    if (count === TOTAL_CANDI) {
+      btnManual.disabled = true;
+      btnAuto.disabled = true;
+      triggerFinalCelebration();
+    }
+  }
+
+  function buildManual() {
+    if (count < TOTAL_CANDI && !isAutoRunning) {
+      candis[count].classList.add('active');
+      const currentPitch = 160 + (count * 0.5);
+      playTone(currentPitch, 0.1);
+      count++;
+      updateProgress();
+    }
+  }
+
+  function buildAuto() {
+    if (isAutoRunning || count >= TOTAL_CANDI) return;
+    
+    isAutoRunning = true;
+    btnManual.disabled = true;
+    btnAuto.disabled = true;
+
+    const intervalTime = 3; 
+
+    const interval = setInterval(() => {
+      if (count < TOTAL_CANDI) {
+        candis[count].classList.add('active');
+        if (count % 12 === 0) { 
+          playTone(220 + (count * 0.4), 0.04);
+        }
+        count++;
+        updateProgress();
+      } else {
+        clearInterval(interval);
+        isAutoRunning = false;
+      }
+    }, intervalTime);
+  }
+
+  // 3. Typewriter Effect untuk Surat Cinta
+  const loveLetter = `aku mungkij bukan bandung bondowoso tapi aku ijal bsndogohohohohohoho 
+
+setiap candi yang di pencet di atas, adalah saksi dan bukti nyata kalo aku masih dan bwkal selalu berusaha chahay apsih
+
+kalo 1000 candi syarat mutlak buat dapetin hati kamu
+harusnya dari dulu udah aku bangun tanpa perlu nunggu kamu minta HOHOHOHOHOHOOHOHO`;
+
+  function triggerFinalCelebration() {
+    setTimeout(() => playTone(392.00, 0.3), 100);
+    setTimeout(() => playTone(523.25, 0.4), 250);
+    setTimeout(() => playTone(659.25, 0.5), 400);
+    setTimeout(() => playTone(783.99, 0.8), 550);
+
+    setTimeout(() => {
+      messageBox.classList.add('show');
+      messageBox.scrollIntoView({ behavior: 'smooth' });
+      startTypewriter();
+    }, 800);
+  }
+
+  function startTypewriter() {
+    let index = 0;
+    typewriter.innerHTML = "";
+    
+    function type() {
+      if (index < loveLetter.length) {
+        const char = loveLetter.charAt(index);
+        
+        if (loveLetter.substring(index, index + 4) === "Aini") {
+          typewriter.innerHTML += '<span class="highlight">Aini</span>';
+          index += 4;
+        } else if (loveLetter.substring(index, index + 10) === "kotak emas") {
+          typewriter.innerHTML += '<span class="highlight">kotak emas</span>';
+          index += 10;
+        } else {
+          typewriter.innerHTML += char;
+          index++;
+        }
+        
+        setTimeout(type, 30); 
+      } else {
+        setTimeout(() => {
+          sigText.innerHTML = "aku cayang kamu hihi";
+          sigText.style.opacity = 1;
+        }, 500);
+      }
+    }
+    type();
+  }
+</script>
+
+</body>
+</html>
